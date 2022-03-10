@@ -1,0 +1,30 @@
+--오라클 DB,사용자,테이블 생성
+
+ 
+
+-- 데이터베이스 생성
+create tablespace myts datafile
+'C:\app\calss2-00\oradata\myoracle\myts.dbf' size 100M
+autoextend on next 5M;
+
+ 
+
+-- User 생성
+create user ora_user identified by hong
+default tablespace myts
+temporary tablespace temp;
+
+ 
+
+-- 권한설정
+grant dba to ora_user;
+
+
+-- 테이블생성
+create table student(
+  id int,
+  name varchar(20) 
+);
+
+-- 데이터입력
+insert into student values(12345,'홍길동');
