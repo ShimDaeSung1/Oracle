@@ -1,0 +1,171 @@
+select * from emp;
+
+select empno, ename, job from emp;
+
+select deptno from dept;
+
+select DISTINCT job, deptno from emp; /*job이 같더라도, deptno가 다르면 출력, distinct는 모든 컬럼의 값이 같아야 중복으로 취급한다.*/
+
+select job, deptno from emp; /*job이 같더라도, deptno가 다르면 출력, distinct는 모든 컬럼의 값이 같아야 중복으로 취급한다.*/
+
+select ename, sal*12+comm as "salary of year" from emp;
+
+select * 
+from emp 
+order by sal desc;
+
+select * 
+from emp 
+order by deptno asc, sal desc;
+select * 
+from emp 
+order by deptno, sal desc;
+
+select ename, deptno, sal
+from emp;
+
+select ename, deptno, sal
+from emp
+order by deptno, sal desc;
+
+select *
+from emp where deptno = 30;
+
+select *
+from emp
+where deptno = 30 and job = 'SALESMAN';
+
+--select * 
+--from member
+--where id = 'hkd' and pw = '1234';
+
+select *
+from emp
+where JOB <> 'SALESMAN';
+
+select *
+from emp
+where not sal = 3000;
+
+select *
+from emp
+where job in ('MANGER', 'SALESMAN', 'CLERK');
+
+select *
+from emp
+where sal between 2000 and 3000;
+
+select *
+from emp
+where ename like 'S%';
+
+select *
+from emp
+where ename like '%S';
+
+-- 키워드 검색에 사용
+select *
+from emp
+where ename like '%S%';
+
+-- 게시판 제목에서 'sql'검색
+--select *
+--from board
+--where title like '%sql%';
+
+-- 2번째 글자가 L인 사원만 출력
+select *
+from emp
+where ename like '_L%';
+
+-- _나 %가 들어가는 검색어를 검색하는 경우
+-- 예) 'A_A'
+select *
+from emp
+where ename like 'A\_A%' escape '\'; 
+-- escape를 통해 언더바는 문자로 치환된다.
+-- 치환하지 않았다면 AZACCC, ABAZZZ가 표시되지만, escape를 사용할 경우 A_ACCC,A_AZZZ가 출력됨
+
+select *
+from emp
+where comm is not null;
+
+-- Asia
+create table sale_asia(
+    name varchar(20),
+    ea number,
+    sdate date default sysdate
+);
+
+insert into sale_asia(name, ea) values('소나타', 10);
+insert into sale_asia(name, ea) values('EV6', 20);
+insert into sale_asia(name, ea) values('그랜저', 30);
+select * from sale_asia;
+
+-- America
+create table sale_america(
+    name varchar(20),
+    ea number,
+    sdate date default sysdate
+);
+
+insert into sale_america(name, ea) values('그랜저', 30);
+insert into sale_america(name, ea) values('제네시스', 50);
+select * from sale_america;
+
+commit; --변경된 데이터 확정. rollback : 변경된 데이터 취소
+--오라클은 수동 commit이 기본값. MS-SQL SERVER랑 MySQL은 자동 commit이 기본
+
+select name, ea
+from sale_asia
+union
+select name, ea
+from sale_america; --두 테이블의 컬럼의 개수가 서로 맞아야하고 컬럼의 타입이 서로 호환이 되어야함
+
+select ename, upper(ename), lower(ename), INITCAP(ename), length(ename)
+from emp;
+
+select length('한글'), lengthb('한글')
+from dual; -- dual은 실제테이블이 아닌 가상의 테이블로, 오라클에서 지원한다
+
+select sysdate; --오류가 난다. 오라클에선 from절을 항상 써줘야 하기 때문.
+select sysdate from dual;
+
+select job, substr(job, 1,2), substr(job, 3, 3), substr(job,5)
+from emp; -- (#, #)#부터 #개만큼 갖고오기
+
+select instr('HELLO, ORACLE!', 'L') from dual; --3
+select instr('HELLO, ORACLE!', 'L', 5) from dual; --5번째부터 찾는다
+select instr('HELLO, ORACLE!', 'L', 2, 2) from dual; --2번째부터 2번째 L을 찾아라
+
+select '010-1234-5678' as replace_before,
+    replace('010-1234-5678', '-', '') as replace_1,
+    replace('010-1234-5678', '-') as replace_2
+    from dual;
+    
+
+--연습문제 02
+select * from emp;
+
+select * 
+from emp
+where hiredate < '19820101';
+
+select *
+from emp
+order by sal asc;
+
+select *
+from emp
+where deptno = 10;
+
+select *
+from emp
+where deptno = 10 or deptno = 20;
+
+select *
+from emp
+order by deptno, hiredate;
+
+
+
