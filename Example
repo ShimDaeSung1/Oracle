@@ -1,0 +1,118 @@
+select deptno, min(sal) --min으로 출력한 열 제외한 deptno는 group by로 써줘야함
+from emp
+group by deptno;
+
+create table member2(
+    id varchar2(50) primary key,
+    name varchar2(50) not null,
+    gender char(1) not null,
+    joinDate date default sysdate
+);  
+
+insert into member2 values('hkd','홍길동','m','2001-01-01');
+insert into member2 values('lss','이순신','m','2003-02-01');
+insert into member2 values('hj','황진이','f','2002-11-13');
+insert into member2 values('wg','왕건','m','2005-12-21');
+insert into member2 values('pms','박문수','m','2006-11-09');
+
+create table goods2(
+    gno number primary key,
+    name varchar(50) not null,
+    price number not null
+);
+insert into goods2 values(1,'mp3',10000);
+insert into goods2 values(2,'camera',50000);
+insert into goods2 values(3,'pc',700000);
+
+create table orders2(
+    ono number primary key,
+    id varchar2(50) not null references member2(id),
+    orderDate date default sysdate
+);
+
+insert into  orders2 values(1,'hkd','2001-03-27');
+insert into orders2 values(2,'wg','2005-04-17');
+insert into orders2 values(3,'hkd','2006-02-07');
+
+create table ordersDetail(
+    no number primary key,
+    ono number not null references orders2(ono),
+    gno number not null references goods2(gno),
+    ea number not null
+);
+-- 번호,주문번호,상품번호,상품수량
+insert into ordersDetail values(1,1,1,1);
+insert into ordersDetail values(2,1,3,1);
+insert into ordersDetail values(3,2,2,2);
+insert into ordersDetail values(4,3,2,1);
+
+commit;
+--2. 전체회원수를 구하시오.
+select count(id) as 전체회원수
+from member2;
+
+
+--3. 성별 회원수를 구하시오.
+--성별, 회원수
+select gender, count(*) --집계함수 count를 제외한 다른 열 gender를 그룹으로 지정해줘야함
+from member2
+group by gender;
+
+
+
+--4. 가장 많이(갯수기준) 판매된 상품부터 출력하시오.
+--상품명 , 판매수량
+select gno, goods2.name, sum(ea)
+from ordersdetail join goods2
+using(gno) --조인시 사용할 열
+group by gno, goods2.name --집계함수 sum에 사용된 열 ea를 제외하고 gno, goods2.name을 그룹으로 지정해줘야함.
+order by sum(ea) desc;
+
+
+--5. 주문내역을 출력하시오.
+--회원명, 상품명, 주문갯수
+select member2.name, goods2.name, sum(ordersdetail.ea)
+from member2 join orders2 using(id) 
+join ordersdetail on(orders2.ono = ordersdetail.ono)
+join goods2 on(ordersdetail.gno = goods2.gno)
+group by member2.name, goods2.name;
+
+
+
+6. 성이 '홍'인 회원을 검색하시오.
+select *
+from member2
+where name like '홍%';
+
+
+7. 년도, 상품별 판매수량을 구하시오. group by
+년도, 상품명, 판매갯수
+select extract(year from orderdate) as 년도, gd.name, sum(ea)
+from orders2 od join ordersdetail ot
+on (od.ono = ot.ono) join goods2 gd
+on(ot.gno = gd.gno)
+group by od.orderdate, gd.name;
+
+    
+    
+    
+    
+    
+select * from member2;
+select * from ordersdetail;
+select * from orders2;
+select * from goods2;
+    
+    
+    
+
+    
+
+
+
+select * from dept;
+
+select * from emp
+where exists (select * from dept where deptno = 40);
+-- exists는 insert, update, delete와 같이 쓰이는 경우가 많다.
+-- 예 ) 재고테이블에 30번 상품이 있으면, 출고 테이블에 insert하는 경우
