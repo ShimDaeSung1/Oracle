@@ -1,0 +1,96 @@
+-- 1. emp테이블에서 sal를 10% 인상하는 stored procedure를 작성하시오.
+
+select * from emp;
+
+create or replace procedure pro_up_sal
+
+is
+begin
+    update emp
+    set emp.sal = emp.sal*1.1;
+    COMMIT;
+end pro_up_sal;
+/
+exec pro_up_sal;
+
+-- 2. 1번에서 인상률을 parameter로 변경해서 stored procedure를 작성하시오.
+create or replace procedure pro_sal_up(
+    param_in_rate in int,
+    param_in_no in int
+)
+is
+begin
+    update emp set sal = sal+sal*param_in_rate where emp.empno = param_in_no;
+    COMMIT;
+end pro_sal_up;
+
+execute pro_sal_up(0.5, 7499);
+select * from emp;
+
+--번외.
+--
+--1. 상품테이블(재고)을 생성하시오.
+--	상품번호, 상품명, 가격, 재고량
+create table item(
+    no number primary key,
+    name varchar2(20) not null,
+    price number not null,
+    ea int not null
+);
+
+--2. 입고테이블을 생성하시오.
+--	입고번호, 상품번호, 입고량, 입고날짜
+create table initem(
+    in_no number primary key,
+    no number references item(no),
+    in_ea int not null,
+    in_date date not null
+);
+insert into initem values(031001, 5, 3, '2022-03-10')
+
+--3. 출고테이블을 생성하시오.
+--	출고번호, 상품번호, 출고량, 출고날짜
+create table outitem(
+    out_no number primary key,
+    no number references item(no),
+    out_ea int not null,
+    out_date date not null
+);
+--4. 1번테이블에 데이터를 5건이상 입력하시오.
+insert into item values(1, '아이폰se2',150000,32);
+insert into item values(2, 'lG냉장고',1000000,16);
+insert into item values(3, '갤럭시5',120000,23);
+insert into item values(4, 'SM5',15000000,5);
+insert into item values(5, '김치냉장고',800000,2);
+--5. 입고테이블에 데이터가 입력되면 재고 테이블을 업데이트 하는 트리거를 작성하시오.
+create or replace trigger trg_item_update
+after
+insert on initem --입고
+for each row
+begin
+    update item set ea = (ea + :new.in_ea)--재고
+    where item.no = :new.no;
+end;
+
+desc initem;
+insert into initem values(031001, 1, 2, sysdate);
+select * from initem;
+select * from item;
+
+--6. 출고테이블에 데이터가 입력되면 재고 테이블을 업데이트 하는 트리거를 작성하시오.
+create or replace trigger trg_outitem_update
+after
+insert on outitem
+for each row
+begin
+    update item set ea = (ea - :new.out_ea)
+    where no = :new.no;
+end;
+
+desc outitem;
+insert into outitem values(031001, 1, 2, sysdate);
+select * from outitem;
+select * from item;
+
+
+
