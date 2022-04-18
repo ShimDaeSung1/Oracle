@@ -1,0 +1,5 @@
+create user musthave identified by 1234;
+
+grant connect, resource to musthave;
+
+conn musthave/1234;
