@@ -3,3 +3,5 @@ create user musthave identified by 1234;
 grant connect, resource to musthave;
 
 conn musthave/1234;
+
+--system계정에서 사용
